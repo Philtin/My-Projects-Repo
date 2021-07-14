@@ -203,7 +203,7 @@ stage {
   }
 } 
 resource "aws_codestarconnections_connection" "GitHub" {
-  name          = "GitHub-connection"
+  name          = "GitHub-Connection"
   provider_type = "GitHub"
 }
 
