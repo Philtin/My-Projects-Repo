@@ -1,10 +1,12 @@
 provider "aws" { 
     region = "us-east-2"
-access_key = ""
-secret_key = ""
+access_key = "AKIAQHTVRQ2QDOS24GUQ"
+secret_key = "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"
   }
 
-resource "aws_s3_bucket" "s3_bucket" {
+
+
+resource "aws_s3_bucket" "newtechnicaltask" {
   bucket = "newtechnicaltask"  
   acl    = "public-read"
      
@@ -13,15 +15,15 @@ resource "aws_s3_bucket" "s3_bucket" {
      }
    } 
 
-resource "aws_s3_bucket_object" "index_object" {
+resource "aws_s3_bucket_object" "index_object" { 
 bucket = "newtechnicaltask"
 key    = "index.html"
 source = "html/index.html"
-acl    = "public-read"
+acl    = "public-read" 
 } 
 
-resource "aws_s3_bucket_object" "error_object" {
-  bucket = "newtechnicaltask"
+resource "aws_s3_bucket_object" "error_object" {  
+  bucket = "newtechnicaltask" 
   key    = "error.html"
   source = "html/error.html"
   acl    = "public-read"
@@ -91,8 +93,7 @@ resource "aws_cloudfront_distribution" "cloudfront_distribution" {
          restriction_type = "none"
        }
      }
-
-}
+    }
 
 resource "aws_iam_role" "newtechnicaltask_codepipeline" { 
   name = "newtechnicaltask_codepipeline"
@@ -111,7 +112,7 @@ resource "aws_iam_role" "newtechnicaltask_codepipeline" {
   ]
 }
 EOF
-}
+} 
 
 resource "aws_iam_role_policy" "codepipeline_policy" {  
   name = "codepipeline_policy"
@@ -132,96 +133,80 @@ resource "aws_iam_role_policy" "codepipeline_policy" {
         "s3:PutObject" 
       ],
       "Resource": [ 
-         "arn:aws:s3:::newtechnicaltask",
+         "arn:aws:s3:::newtechnicaltask", 
          "arn:aws:s3:::newtechnicaltask/*"
       ]
     }
   ]
 }
-EOF
+EOF 
 }
 
-resource  "aws_codepipeline" "newtechnicaltask_pipeline" { 
-  name  = "newtechnicaltask_pipeline" 
+resource  "aws_codepipeline" "newtechnicaltask" {  
+ 
+ name  = "newtechnicaltask" 
   role_arn = "arn:aws:iam::016352642720:role/newtechnicaltask_codepipeline" 
   
-  
-  artifact_store {
+artifact_store {
     location = "newtechnicaltask" 
     type     = "S3"
-  } 
+  }
  
-  stage {
+stage {
     name = "Source" 
 
     action {
-      name             = "Source"
+      name             = "Source" 
       category         = "Source"
-      owner            = "ThirdParty"
-      provider         = "Github"
-      version          = "2" 
-      output_artifacts = ["SourceArtifacts"]
-
-      configuration = {
-          Owner                = "Philtin"
-          OAuthToken           = ""
-          FullRepositoryId     = "philtin/interview-project"
-          Branch               = "main"
-          PollForSourceChanges = "true"
-      }
+      owner            = "AWS"
+      provider         = "CodeStarSourceConnection"
+      version          = "1" 
+      output_artifacts = ["tf-code"] 
+  configuration = {
+        FullRepositoryId    = "Philtin/My-Projects-Repo" 
+        BranchName          = "main"
+        ConnectionArn = "arn:aws:codestar-connections:us-east-2:016352642720:connection/95186431-5dfe-4b10-8143-bc6917b11101" 
+        OutputArtifactFormat = "CODE_ZIP" 
+      } 
     }
   }
 
- stage {   
+    stage {
+        name ="Plan"
+        action{
+            name = "Build"
+            category = "Build" 
+            provider = "CodeBuild"
+            version = "1"
+            owner = "AWS"
+            input_artifacts = ["tf-code"]
+            configuration = {
+                ProjectName = "newtechnicaltask" 
+            }
+        }
+    }
+  
+       stage {   
     name = "Deploy"
 
     action {
-      name            = "Deploy"
-      category        = "Deploy"
-      owner           = "AWS"
-      provider        = "s3"
-      input_artifacts = ["OutputArtifacts"] 
-      version         = "1"
-
+      name            = "Deploy" 
+      category        = "Build"
+      provider        = "CodeBuild"   
+      version         = "1"    
+      owner           = "AWS" 
+     input_artifacts = ["tf-code"] 
       configuration = {
-           BucketName = "newechnicaltask"
-              Extract =  "true"
-        
-   }
-  } 
- }
+          ProjectName = "newtechnicaltask" 
+         
+     }
+   } 
+  }
+} 
+resource "aws_codestarconnections_connection" "GitHub" {
+  name          = "GitHub-connection"
+  provider_type = "GitHub"
 }
 
-locals {
-  webhook_secret = "super-secret"
-}
 
-resource "aws_codepipeline_webhook" "newtechnicaltask_pipeline" {
-  name = "newtechnicaltask_pipeline" 
-  authentication = "GITHUB_HMAC"
-  target_action = "Source"
-  target_pipeline = "aws_codepipeline.newtechnicaltask_pipeline"
-
-authentication_configuration {
-  secret_token = local.webhook_secret
-}
-
-filter {
-  json_path = "$.ref"
-  match_equals = "refs/heads/{Branch}"  
- }
-}
-
-resource "github_repository_webhook" "newtechnicaltask_pipeline" { 
-  repository ="/Philtin/interview-project"
- 
-
-   configuration {
-     url = aws_codepipeline_webhook.newtechnicaltask_pipeline.url
-     content_type = "json"
-     secret = local.webhook_secret
-
-   }
-     events = ["push"]    
-}
 
