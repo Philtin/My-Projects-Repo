@@ -164,7 +164,7 @@ stage {
   configuration = {
         FullRepositoryId    = "Philtin/My-Projects-Repo" 
         BranchName          = "main"
-        ConnectionArn = "arn:aws:codestar-connections:us-east-2:016352642720:connection/95186431-5dfe-4b10-8143-bc6917b11101" 
+        ConnectionArn = var.codestar_connector_credentials 
         OutputArtifactFormat = "CODE_ZIP" 
       } 
     }
