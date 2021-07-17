@@ -236,10 +236,10 @@ stage {
          Owner = "Philtin"
          Repo = "My-Projects-Repo"  
          Branch      = "main"
-         OAuthToken = "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" 
+         OAuthToken = "var.OAuthToken" 
         #  PollForSourceChanges = "true" 
 
-        #  ConnectionArn     = "arn:aws:codestar-connections:us-east-2:016352642720:connection/18e0c4b0-a44f-45cc-a55e-7d0124cfec39"
+        #  ConnectionArn     = var.codestar.connection
         #  OutputArtifactFormat = "CODE_ZIP" 
       } 
     }
