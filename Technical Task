@@ -113,15 +113,10 @@ EOF
 } 
 
 data "aws_iam_policy_document" "tf-cicd-pipeline-policies" {
-    statement{
-        sid = ""
-        actions = ["codestar-connections:UseConnection"]
-        resources = ["*"]
-        effect = "Allow"
-    }
+   
 
 
-      statement{
+       statement{
         sid = ""
         actions = ["s3:*", "codebuild:*"]
         resources = ["*"]
