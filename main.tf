@@ -226,7 +226,7 @@ stage {
          Owner = "Philtin"
          Repo = "My-Projects-Repo"    
          Branch      = "main"
-         OAuthToken = " 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" 
+         OAuthToken = "" 
          PollForSourceChanges = "true" 
 
         #  ConnectionArn     = "arn:aws:codestar-connections:us-east-2:016352642720:connection/18e0c4b0-a44f-45cc-a55e-7d0124cfec39"
