@@ -146,7 +146,7 @@ EOF
 resource  "aws_codepipeline" "newtechnicaltask" {  
  
  name  = "newtechnicaltask" 
-  role_arn = "arn:aws:iam::016352642720:role/newtechnicaltask_codepipeline"  
+  role_arn = "aws_iam_role.codepipeline_role.arn"  
   
 artifact_store {
     location = "newtechnicaltask" 
